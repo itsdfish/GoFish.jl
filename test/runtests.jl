@@ -1,4 +1,5 @@
 using SafeTestsets
+using Test
 
 @safetestset "remove!" begin 
     using GoFish
@@ -51,7 +52,6 @@ end
     @test card == test_card
 end
 
-
 @safetestset "update_books!" begin
     using GoFish
     using Test
@@ -73,6 +73,122 @@ end
     @test length(game.books[id]) == 1
     @test length(player.cards) == 1
     @test player.cards[1] == Card(:heart, 1)
+end
+
+@testset verbose = true "inquire!" begin
+    @safetestset "1" begin 
+        using GoFish
+        using Test
+        using GoFish: inquire!
+    
+        id = 1
+        player1 = Player(;id)
+    
+        push!(player1.cards, Card(:heart, 2))
+        push!(player1.cards, Card(:club, 2))
+        push!(player1.cards, Card(:diamond, 2))
+    
+        id = 2
+        player2 = Player(;id)
+        push!(player2.cards, Card(:spade, 2))
+    
+        game = Game([1,2])
+        game.deck = [Card(:club, 3), Card(:club, 4)]
+    
+        players = Dict(1 => player1, 2 => player2)
+        inquire!(game, player1, players)
+        @test length(game.books[1]) == 1
+        @test game.books[1][1] == 2
+        @test isempty(game.deck)
+        @test length(player1.cards) == 1
+        @test length(player2.cards) == 1
+        @test player1.cards[1] == Card(:club, 3)
+        @test player2.cards[1] == Card(:club, 4)
+    end
+
+    @safetestset "2" begin 
+        using GoFish
+        using Test
+        using GoFish: inquire!
+    
+        id = 1
+        player1 = Player(;id)
+    
+        push!(player1.cards, Card(:heart, 2))
+        push!(player1.cards, Card(:club, 2))
+        push!(player1.cards, Card(:diamond, 2))
+    
+        id = 2
+        player2 = Player(;id)
+        push!(player2.cards, Card(:spade, 2))
+    
+        game = Game([1,2])
+        empty!(game.deck)
+    
+        players = Dict(1 => player1, 2 => player2)
+        inquire!(game, player1, players)
+        @test length(game.books[1]) == 1
+        @test game.books[1][1] == 2
+        @test length(player1.cards) == 0
+        @test length(player2.cards) == 0
+    end
+
+    @safetestset "3" begin 
+        using GoFish
+        using Test
+        using GoFish: inquire!
+    
+        id = 1
+        player1 = Player(;id)
+    
+        push!(player1.cards, Card(:heart, 2))
+        push!(player1.cards, Card(:club, 2))
+        push!(player1.cards, Card(:diamond, 2))
+    
+        id = 2
+        player2 = Player(;id)
+        push!(player2.cards, Card(:spade, 3))
+    
+        game = Game([1,2])
+        game.deck = [Card(:diamond, 10),Card(:diamond, 11)]
+    
+        players = Dict(1 => player1, 2 => player2)
+        inquire!(game, player1, players)
+
+        @test length(game.deck) == 1
+        @test length(game.books[1]) == 0
+        @test length(player1.cards) == 4
+        @test length(player2.cards) == 1
+    end
+end
+
+@safetestset "correct_completion" begin
+    using GoFish
+    using Test
+    using Random
+    using GoFish: deal!
+    using DataStructures: SortedDict
+    Random.seed!(8574)
+
+    players = SortedDict{Int,Player}(id => Player(;id) for id in 1:3)
+    ids = keys(players)
+    game = Game(ids)
+    deal!(game, players)
+
+    @test length(game.deck) == (52 - 3 * 7)
+    for (k,p) ∈ players 
+        @test length(p.cards) == 7
+    end
+
+    players = SortedDict{Int,Player}(id => Player(;id) for id in 1:5)
+    ids = keys(players)
+    game = Game(ids)
+    deal!(game, players)
+
+    @test length(game.deck) == (52 - 5 * 5)
+    for (k,p) ∈ players 
+        @test length(p.cards) == 5
+    end
 end
 
 @safetestset "correct_completion" begin

@@ -8,7 +8,7 @@ end
 
 function deal!(game, players)
     shuffle!(game.deck)
-    n = length(players) > 3 ? 7 : 5
+    n = length(players) > 3 ? 5 : 7
     for (k,p) in players 
         cards = splice!(game.deck, 1:n)
         p.cards = cards
@@ -28,7 +28,6 @@ end
 function add!(player, cards::Vector{Card})
     push!(player.cards, cards...)
 end
-
 
 function add!(player, card::Card)
     push!(player.cards, card)
@@ -57,6 +56,7 @@ function inquire!(game, player, players)
             if isempty(opponent.cards)
                 delete!(players, opponent.id)
             end
+            update!(player, id, value, length(cards))
         else 
             if !isempty(game.deck)
                 card = go_fish(game)
@@ -68,6 +68,7 @@ function inquire!(game, player, players)
                     delete!(players, player.id)
                 end
             end
+            update!(player, id, value, 0)
             inquiring = false
         end
     end
@@ -79,6 +80,10 @@ function attempt_replinish!(game, player)
         push!(player.cards, card)
     end
     return nothing
+end
+
+function update!(player, id, value, n_cards)
+    # intentionally blank
 end
 
 function play_round(game, players)
