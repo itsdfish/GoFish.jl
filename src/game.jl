@@ -1,11 +1,21 @@
 import Base: == 
 
-==(c1::Card, c2::Card) = (c1.value == c2.value) && (c1.suit == c2.suit)
+# ==(c1::Card, c2::Card) = (c1.value == c2.value) && (c1.suit == c2.suit)
 
-function create_deck()
-    return [Card(s, v) for s ∈ (:heart,:diamond,:club,:spade) for v ∈ 1:13]
-end
+# function create_deck()
+#     return [Card(s, v) for s ∈ (:heart,:diamond,:club,:spade) for v ∈ 1:13]
+# end
 
+"""
+    deal!(game, players)
+
+Randomizes and deals cards to each player. Each player recieves 7 cards if the number of cards 
+is 1-3; otherwise, each player recieves 5 cards.
+
+# Argument
+- `game`: a game object 
+- `players`: a dictionary of players 
+"""
 function deal!(game, players)
     shuffle!(game.deck)
     n = length(players) > 3 ? 5 : 7
@@ -17,11 +27,11 @@ function deal!(game, players)
 end
 
 function has_card(player, value)
-    return any(c -> c.value == value, player.cards)
+    return any(c -> c.rnk == value, player.cards)
 end
 
 function remove!(player, value)
-    idx = findall(c -> c.value == value, player.cards)
+    idx = findall(c -> c.rnk == value, player.cards)
     return splice!(player.cards, idx)
 end
 
@@ -40,7 +50,7 @@ end
 function inquire!(game, player, players)
     inquiring = true 
     while inquiring 
-        id,value = decide(player, players)
+        id,value = decide(player, keys(players))
         opponent = players[id]
         if has_card(opponent, value)
             cards = remove!(opponent, value)
@@ -56,11 +66,12 @@ function inquire!(game, player, players)
             if isempty(opponent.cards)
                 delete!(players, opponent.id)
             end
-            update!(player, id, value, length(cards))
         else 
+            process_exchange!(players, player, id, value) 
             if !isempty(game.deck)
                 card = go_fish(game)
                 add!(player, card)
+                process_go_fish!(players, player)
                 update_books!(game, player)
                 attempt_replinish!(game, player)
                 if isempty(player.cards)
@@ -68,7 +79,6 @@ function inquire!(game, player, players)
                     delete!(players, player.id)
                 end
             end
-            update!(player, id, value, 0)
             inquiring = false
         end
     end
@@ -82,7 +92,23 @@ function attempt_replinish!(game, player)
     return nothing
 end
 
-function update!(player, id, value, n_cards)
+function process_exchange!(players, inquirer, id, value, cards=Card[])
+    for (k, p) ∈ players 
+        process_result!(p, inquirer.id, id, value, cards)
+    end
+end
+
+function process_result!(player::AbstractPlayer, inquirer_id, opponent_id, value, cards)
+    # intentionally blank
+end
+
+function process_go_fish!(players, inquirer)
+    for (k, p) ∈ players 
+        process_go_fish!(p, inquirer.id)
+    end
+end
+
+function process_go_fish!(player::AbstractPlayer, inquirer_id)
     # intentionally blank
 end
 
@@ -108,8 +134,8 @@ function update_books!(game, player)
     u_cards = unique(player.cards)
     n_cards = length(u_cards)
     for i ∈ 1:n_cards
-        value = u_cards[i].value
-        idx = findall(c -> c.value == value, player.cards)
+        value = u_cards[i].rnk
+        idx = findall(c -> c.rnk == value, player.cards)
         if length(idx) == 4
             add_book!(game, player.id, value)
             deleteat!(player.cards, idx)
@@ -121,8 +147,8 @@ function add_book!(game, id, value)
     push!(game.books[id], value)
 end
 
-function decide(player, players)
-    id = rand(setdiff(keys(players), player.id))
+function decide(player, ids)
+    id = rand(setdiff(ids, player.id))
     card = rand(player.cards)
-    return id,card.value
+    return id,card.rnk
 end

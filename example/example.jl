@@ -17,3 +17,14 @@ game = Game(ids)
 deal!(game, players)
 
 simulate(game, players)
+
+
+using GoFish: Human, inquire!, is_valid, clear_repl, play_round 
+
+players = SortedDict{Int,Union{Human,Player}}(id => Player(;id) for id in 2:3)
+players[1] = Human(id=1)
+
+game = PlayGame(keys(players))
+deal!(game, players)
+clear_repl()
+play(game, players)

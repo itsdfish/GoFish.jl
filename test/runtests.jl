@@ -8,16 +8,16 @@ using Test
 
     id = 1
     player = Player(;id)
-    push!(player.cards, Card(:heart, 1))
-    push!(player.cards, Card(:heart, 2))
+    push!(player.cards, Card(:hearts, 1))
+    push!(player.cards, Card(:hearts, 2))
     push!(player.cards, Card(:clubs, 2))
     
     removed_cards = remove!(player, 2)
     @test length(removed_cards) == 2
-    @test Card(:heart, 2) ∈ removed_cards
+    @test Card(:hearts, 2) ∈ removed_cards
     @test Card(:clubs, 2) ∈ removed_cards
     @test length(player.cards) == 1
-    @test Card(:heart, 1) ∈ player.cards
+    @test Card(:hearts, 1) ∈ player.cards
 end 
 
 @safetestset "has_card" begin 
@@ -27,8 +27,8 @@ end
 
     id = 1
     player = Player(;id)
-    push!(player.cards, Card(:heart, 1))
-    push!(player.cards, Card(:heart, 2))
+    push!(player.cards, Card(:hearts, 1))
+    push!(player.cards, Card(:hearts, 2))
     push!(player.cards, Card(:clubs, 2))
     
     @test has_card(player, 1)
@@ -61,18 +61,18 @@ end
     player = Player(;id)
     game = Game([id])
 
-    push!(player.cards, Card(:heart, 1))
-    push!(player.cards, Card(:heart, 2))
-    push!(player.cards, Card(:diamond, 2))
-    push!(player.cards, Card(:club, 2))
-    push!(player.cards, Card(:spade, 2))
+    push!(player.cards, Card(:hearts, 1))
+    push!(player.cards, Card(:hearts, 2))
+    push!(player.cards, Card(:diamonds, 2))
+    push!(player.cards, Card(:clubs, 2))
+    push!(player.cards, Card(:spades, 2))
     update_books!(game, player)
 
     @test game.books[id][1] == 2
     @test length(game.books) == 1
     @test length(game.books[id]) == 1
     @test length(player.cards) == 1
-    @test player.cards[1] == Card(:heart, 1)
+    @test player.cards[1] == Card(:hearts, 1)
 end
 
 @testset verbose = true "inquire!" begin
@@ -84,16 +84,16 @@ end
         id = 1
         player1 = Player(;id)
     
-        push!(player1.cards, Card(:heart, 2))
-        push!(player1.cards, Card(:club, 2))
-        push!(player1.cards, Card(:diamond, 2))
+        push!(player1.cards, Card(:hearts, 2))
+        push!(player1.cards, Card(:clubs, 2))
+        push!(player1.cards, Card(:diamonds, 2))
     
         id = 2
         player2 = Player(;id)
-        push!(player2.cards, Card(:spade, 2))
+        push!(player2.cards, Card(:spades, 2))
     
         game = Game([1,2])
-        game.deck = [Card(:club, 3), Card(:club, 4)]
+        game.deck = [Card(:clubs, 3), Card(:clubs, 4)]
     
         players = Dict(1 => player1, 2 => player2)
         inquire!(game, player1, players)
@@ -102,8 +102,8 @@ end
         @test isempty(game.deck)
         @test length(player1.cards) == 1
         @test length(player2.cards) == 1
-        @test player1.cards[1] == Card(:club, 3)
-        @test player2.cards[1] == Card(:club, 4)
+        @test player1.cards[1] == Card(:clubs, 3)
+        @test player2.cards[1] == Card(:clubs, 4)
     end
 
     @safetestset "2" begin 
@@ -114,13 +114,13 @@ end
         id = 1
         player1 = Player(;id)
     
-        push!(player1.cards, Card(:heart, 2))
-        push!(player1.cards, Card(:club, 2))
-        push!(player1.cards, Card(:diamond, 2))
+        push!(player1.cards, Card(:hearts, 2))
+        push!(player1.cards, Card(:clubs, 2))
+        push!(player1.cards, Card(:diamonds, 2))
     
         id = 2
         player2 = Player(;id)
-        push!(player2.cards, Card(:spade, 2))
+        push!(player2.cards, Card(:spades, 2))
     
         game = Game([1,2])
         empty!(game.deck)
@@ -141,16 +141,16 @@ end
         id = 1
         player1 = Player(;id)
     
-        push!(player1.cards, Card(:heart, 2))
-        push!(player1.cards, Card(:club, 2))
-        push!(player1.cards, Card(:diamond, 2))
+        push!(player1.cards, Card(:hearts, 2))
+        push!(player1.cards, Card(:clubs, 2))
+        push!(player1.cards, Card(:diamonds, 2))
     
         id = 2
         player2 = Player(;id)
-        push!(player2.cards, Card(:spade, 3))
+        push!(player2.cards, Card(:spades, 3))
     
         game = Game([1,2])
-        game.deck = [Card(:diamond, 10),Card(:diamond, 11)]
+        game.deck = [Card(:diamonds, 10),Card(:diamonds, 11)]
     
         players = Dict(1 => player1, 2 => player2)
         inquire!(game, player1, players)
@@ -205,6 +205,7 @@ end
         game = Game(ids)
         deal!(game, players)
         simulate(game, players)
+        @test isempty(game.deck)
         @test mapreduce(x -> length(x), +, values(game.books)) == 13
     end
 end
