@@ -9,7 +9,7 @@ abstract type AbstractGame end
 """
 mutable struct Game <: AbstractGame
     deck::Vector{Card}
-    books::Dict{Int,Vector{Int}}
+    books::Dict{Int,Vector{Card}}
 end
 
 """
@@ -21,7 +21,7 @@ A constructor function for simulation game
 - `ids`: a vector of player ids for book dictionary
 """
 function Game(ids)
-    books = Dict(id => Int[] for id ∈ ids)
+    books = Dict(id => Card[] for id ∈ ids)
     return Game(deck(), books)
 end
 
@@ -46,16 +46,16 @@ end
 
 A constructor function for simulation game 
 
-# Arguments 
-- `ids`: a vector of player ids for book dictionary
+# Keywords 
+- `n_players`: the number of player
 - `delay`: delay between actions
 """
-function PlayGame(ids; delay=1.0)
+function PlayGame(; n_players, delay=1.0)
     s = ("A","2","3","4","5","6","7","8","9","T","J","Q","K")
     v = 1:13
     num_2_str = Dict(v => s for (v, s) ∈ zip(v, s))
     str_2_num = Dict(s => v for (s, v) ∈ zip(s, v))
-    books = Dict(id => Card[] for id ∈ ids)
+    books = Dict(id => Card[] for id ∈ 1:n_players)
     return PlayGame(deck(), books, delay, num_2_str, str_2_num)
 end
 

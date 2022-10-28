@@ -1,32 +1,33 @@
-function inquire!(game::PlayGame, player, players)
+function inquire!(game::PlayGame, inquirer, players)
     inquiring = true 
-    human = players[1]
+    human = get_human(players)
     while inquiring 
-        id,value = decide(player, keys(players))
+        id,value = decide(inquirer, keys(players))
         opponent = players[id]
         sleep(game.delay)
-        print_inquiry(game, player, opponent, value)
+        print_inquiry(game, inquirer, opponent, value)
         if has_card(opponent, value)
             cards = remove!(opponent, value)
-            print_exchange(opponent, player, cards)
-            process_exchange!(players, player, id, value, cards)
-            add!(player, cards)
+            print_exchange(opponent, inquirer, cards)
+            observe_exchange!(players, inquirer, id, value, cards)
+            add!(inquirer, cards)
+            book_map = update_books!(game, inquirer)
+            observe_books!(players, book_map)
+            attempt_replinish!(game, inquirer) ? observe_go_fish!(players, inquirer) : nothing
+            attempt_replinish!(game, opponent) ? observe_go_fish!(players, opponent) : nothing
             show_hand(human)
             wait_for_key()
             clear_repl()
-            update_books!(game, player)
-            attempt_replinish!(game, player)
-            attempt_replinish!(game, opponent)
             # remove players if empty after attempting to replinish
-            if isempty(player.cards)
+            if isempty(inquirer.cards)
                 inquiring = false
-                delete!(players, player.id)
+                delete!(players, inquirer.id)
             end
             if isempty(opponent.cards)
                 delete!(players, opponent.id)
             end
         else
-            process_exchange!(players, player, id, value) 
+            observe_exchange!(players, inquirer, id, value) 
             print_no_card(game, opponent, value)
             show_hand(human)
             wait_for_key()
@@ -35,17 +36,18 @@ function inquire!(game::PlayGame, player, players)
                 card = go_fish(game)
                 println("Go fish!")
                 sleep(game.delay)
-                print_go_fish(player, card)
-                add!(player, card)
-                process_go_fish!(players, player)
+                print_go_fish(inquirer, card)
+                add!(inquirer, card)
+                observe_go_fish!(players, inquirer)
+                book_map = update_books!(game, inquirer)
+                observe_books!(players, book_map)
+                attempt_replinish!(game, inquirer) ? observe_go_fish!(players, inquirer) : nothing
                 show_hand(human)
                 wait_for_key()
                 clear_repl()
-                update_books!(game, player)
-                attempt_replinish!(game, player)
-                if isempty(player.cards)
+                if isempty(inquirer.cards)
                     inquiring = false
-                    delete!(players, player.id)
+                    delete!(players, inquirer.id)
                 end
             end
             inquiring = false
@@ -104,19 +106,6 @@ function parse_input(input)
     dict["k"] = 13
     value = dict[str[2]]
     return id,value
-end
-
-function update_books!(game::PlayGame, player)
-    u_cards = unique(player.cards)
-    n_cards = length(u_cards)
-    for i ∈ 1:n_cards
-        card = u_cards[i]
-        idx = findall(c -> c.rnk == card.rnk, player.cards)
-        if length(idx) == 4
-            add_book!(game, player.id, card)
-            deleteat!(player.cards, idx)
-        end
-    end
 end
 
 function show_hand(player)
@@ -182,9 +171,18 @@ function clear_repl()
     end
 end
 
+function get_human(players)
+    for (k,p) ∈ players 
+        isa(p, Human) ? (return p) : nothing
+    end
+end
+
 function play(game::PlayGame, players)
+    players[1] = Human(id=1)
+    ids = shuffle!(collect(keys(players)))
+    deal!(game, players)
     _players = SortedDict(players)
     while !is_over(game, _players)
-        play_round(game, _players)
+        play_round(game, _players, ids)
     end
 end

@@ -68,7 +68,7 @@ end
     push!(player.cards, Card(:spades, 2))
     update_books!(game, player)
 
-    @test game.books[id][1] == 2
+    @test game.books[id][1].rnk == 2
     @test length(game.books) == 1
     @test length(game.books[id]) == 1
     @test length(player.cards) == 1
@@ -98,7 +98,7 @@ end
         players = Dict(1 => player1, 2 => player2)
         inquire!(game, player1, players)
         @test length(game.books[1]) == 1
-        @test game.books[1][1] == 2
+        @test game.books[1][1].rnk == 2
         @test isempty(game.deck)
         @test length(player1.cards) == 1
         @test length(player2.cards) == 1
@@ -128,7 +128,7 @@ end
         players = Dict(1 => player1, 2 => player2)
         inquire!(game, player1, players)
         @test length(game.books[1]) == 1
-        @test game.books[1][1] == 2
+        @test game.books[1][1].rnk == 2
         @test length(player1.cards) == 0
         @test length(player2.cards) == 0
     end
@@ -208,4 +208,29 @@ end
         @test isempty(game.deck)
         @test mapreduce(x -> length(x), +, values(game.books)) == 13
     end
+end
+
+@safetestset "is_valid" begin 
+    using GoFish
+    using Test
+    using Random
+    using GoFish: is_valid
+
+    input = ""
+    @test !is_valid(input)
+
+    input = "   "
+    @test !is_valid(input)
+
+    input = "1 2 3"
+    @test !is_valid(input)
+
+    input = "j 1"
+    @test !is_valid(input)
+
+    input = "2 k"
+    @test is_valid(input)
+
+    input = "2 1"
+    @test is_valid(input)
 end
