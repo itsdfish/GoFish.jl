@@ -42,8 +42,8 @@ GoFish.jl allows you to create a player with custom behavior. The process involv
 
 At minimum the custom subtype requires a field `id` and `cards`. Additional fields can be included as needed.
 ```julia
-mutable struct MyPlayer <: AbstractPlayer
-    id::Int
+mutable struct MyPlayer{T} <: AbstractPlayer
+    id::T
     cards::Vector{Card}
 end
 ```
