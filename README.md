@@ -21,6 +21,9 @@ players = Dict(id => t(;id) for (t,id) in zip(types,ids))
 game = PlayGame(;ids = ids)
 play(game, players)
 ```
+
+<img src="resources/GoFish.gif" />
+
 # Running a Simulation
 
 Simulating Go Fish requires a dictionary of players, and a game object. Players must be a subtype of `AbstractPlayer`. If using heterogenous types, use a dictionary of type `Dict{I,Union{T1,..}}`. The following code is a minimum working example of a simulation. 
