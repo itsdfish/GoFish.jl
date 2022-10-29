@@ -12,30 +12,27 @@ To install GoFish.jl, enter the following into the REPL:
 
 # Playing Go Fish
 
-To play Go Fish, create a sorted dictionary of opponents, where keys are integer ids, and pass the keys
+You can play Go Fish interactively within the Julia REPL using the keyboard. Interactive play requires creating a dictionary of players, a game object, and passing both to the play function. The human player must be a `Human`, but the other players can be any subtype of `AbstractPlayer`.
 ```julia 
-using GoFish, DataStructures
-T = Union{Human,Player}
-# create computer opponents, reserve id = 1 for human player
-players = SortedDict{Int,T}(id => Player(;id) for id in 2:3)
-# play game
-game = PlayGame(;n_players=3)
+using GoFish
+ids = (:you, :Joy,:Bernice)
+types = (Human,Player,Player)
+players = Dict(id => t(;id) for (t,id) in zip(types,ids))
+game = PlayGame(;ids = ids)
+play(game, players)
 ```
 # Running a Simulation
-The following code is a minimum working example of a simulation. 
+
+Simulating Go Fish requires a dictionary of players, and a game object. Players must be a subtype of `AbstractPlayer`. If using heterogenous types, use a dictionary of type `Dict{I,Union{T1,..}}`. The following code is a minimum working example of a simulation. 
 
 ```julia
-using GoFish, DataStructures 
-
-players = SortedDict{Int,Player}(id => Player(;id) for id in 1:3)
-
-ids = keys(players)
+using GoFish
+ids = (:Penelope,:Manuel,:Beelzebub)
+players = Dict(id => Player(;id) for id in ids)
 game = Game(ids)
-
 deal!(game, players)
 simulate(game, players)
 ```
-
 # Creating a Custom Player
 
 GoFish.jl allows you to create a player with custom behavior. The process involves creating a new subtype of `AbstractPlayer` and defining the four methods listed below. 
@@ -48,7 +45,7 @@ mutable struct MyPlayer <: AbstractPlayer
 end
 ```
 
-The decision logic of the player is written in the method `decide`. This method receive the player object, a set of player ids. The result of the decision process is a player id and a card value.  
+The decision logic of the player is written in the method `decide`. This method receives the player object, and a set of player ids. `decide` must return a player id and a card value.  
 ```julia 
 function decide(player::MyPlayer, ids)
     # awesomeness goes here

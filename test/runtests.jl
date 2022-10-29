@@ -167,10 +167,9 @@ end
     using Test
     using Random
     using GoFish: deal!
-    using DataStructures: SortedDict
     Random.seed!(8574)
 
-    players = SortedDict{Int,Player}(id => Player(;id) for id in 1:3)
+    players = Dict{Int,Player}(id => Player(;id) for id in 1:3)
     ids = keys(players)
     game = Game(ids)
     deal!(game, players)
@@ -180,7 +179,7 @@ end
         @test length(p.cards) == 7
     end
 
-    players = SortedDict{Int,Player}(id => Player(;id) for id in 1:5)
+    players = Dict{Int,Player}(id => Player(;id) for id in 1:5)
     ids = keys(players)
     game = Game(ids)
     deal!(game, players)
@@ -196,11 +195,10 @@ end
     using Test
     using Random
     using GoFish: deal!
-    using DataStructures: SortedDict
     Random.seed!(8574)
 
     for i in 1:100
-        players = SortedDict{Int,Player}(id => Player(;id) for id in 1:3)
+        players = Dict{Int,Player}(id => Player(;id) for id in 1:3)
         ids = keys(players)
         game = Game(ids)
         deal!(game, players)
@@ -211,26 +209,95 @@ end
 end
 
 @safetestset "is_valid" begin 
-    using GoFish
-    using Test
-    using Random
-    using GoFish: is_valid
+    @safetestset "1" begin
+        using GoFish
+        using Test
+        using Random
+        using GoFish: is_valid
 
-    input = ""
-    @test !is_valid(input)
+        ids = [1,2,3]
+        input = ""
+        @test !is_valid(input, ids)
 
-    input = "   "
-    @test !is_valid(input)
+        input = "   "
+        @test !is_valid(input, ids)
 
-    input = "1 2 3"
-    @test !is_valid(input)
+        input = "1 2 3"
+        @test !is_valid(input, ids)
 
-    input = "j 1"
-    @test !is_valid(input)
+        input = "j 1"
+        @test !is_valid(input, ids)
 
-    input = "2 k"
-    @test is_valid(input)
+        input = "2 k"
+        @test is_valid(input, ids)
 
-    input = "2 1"
-    @test is_valid(input)
+        input = "2 2"
+        @test is_valid(input, ids)
+    end
+
+    @safetestset "2" begin
+        using GoFish
+        using Test
+        using Random
+        using GoFish: is_valid
+
+        ids = [:a,:b]
+        input = ""
+        @test !is_valid(input, ids)
+
+        input = "   "
+        @test !is_valid(input, ids)
+
+        input = "1 2 3"
+        @test !is_valid(input, ids)
+
+        input = "j 1"
+        @test !is_valid(input, ids)
+
+        input = "a k"
+        @test is_valid(input, ids)
+
+        input = "b 2"
+        @test is_valid(input, ids)
+    end
+end
+
+@testset "parse_input" begin 
+    @safetestset "1" begin
+        using GoFish
+        using Test
+        using Random
+        using GoFish: parse_input
+
+        ids = [1,2,3]
+        input = "1 3"
+        id,value = parse_input(input, ids)
+        @test id == 1
+        @test value == 3 
+
+        ids = [1,2,3]
+        input = "1 a"
+        id,value = parse_input(input, ids)
+        @test id == 1
+        @test value == 1 
+    end
+
+    @safetestset "2" begin
+        using GoFish
+        using Test
+        using Random
+        using GoFish: parse_input
+
+        ids = [:a,:b]
+        input = "a 3"
+        id,value = parse_input(input, ids)
+        @test id == :a
+        @test value == 3 
+
+        ids = [:a,:b]
+        input = "a a"
+        id,value = parse_input(input, ids)
+        @test id == :a
+        @test value == 1 
+    end
 end

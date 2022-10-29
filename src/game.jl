@@ -97,7 +97,8 @@ This procedure will handle the exchange of cards, update the books, and go fish.
 function inquire!(game, inquirer, players)
     inquiring = true 
     while inquiring 
-        id,value = decide(inquirer, keys(players))
+        ids = get_ids(players)
+        id,value = decide(inquirer, ids)
         opponent = players[id]
         if has_card(opponent, value)
             cards = remove!(opponent, value)
@@ -225,7 +226,7 @@ function play_round(game, players, ids)
 end
 
 function simulate(game, players)
-    _players = SortedDict(players)
+    _players = Dict(players)
     ids = shuffle!(collect(keys(players)))
     while !is_over(game, _players)
         play_round(game, _players, ids)
@@ -236,10 +237,10 @@ function is_over(game, players)
     return length(players) == 0
 end
 
-function update_books!(game, player)
+function update_books!(game::AbstractGame{T}, player) where {T}
     u_cards = unique(player.cards)
     n_cards = length(u_cards)
-    book_map = Dict{Int,Vector{Card}}()
+    book_map = Dict{T,Vector{Card}}()
     for i ∈ 1:n_cards
         card = u_cards[i]
         idx = findall(c -> c.rnk == card.rnk, player.cards)
@@ -256,7 +257,9 @@ function add_book!(game, id, value)
 end
 
 function decide(player, ids)
-    id = rand(setdiff(ids, player.id))
+    id = rand(setdiff(ids, [player.id]))
     card = rand(player.cards)
     return id,card.rnk
 end
+
+get_ids(players) = keys(players) |> collect

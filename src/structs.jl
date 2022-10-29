@@ -1,4 +1,4 @@
-abstract type AbstractGame end
+abstract type AbstractGame{T} end
 
 """
     Game 
@@ -7,9 +7,9 @@ abstract type AbstractGame end
 - `deck`: deck of cards 
 - `book`: a dictionary containing player id and card value:  `id => value`
 """
-mutable struct Game <: AbstractGame
+mutable struct Game{T} <: AbstractGame{T} 
     deck::Vector{Card}
-    books::Dict{Int,Vector{Card}}
+    books::Dict{T,Vector{Card}}
 end
 
 """
@@ -33,9 +33,9 @@ A constructor function to play Go Fish
 # Argument 
 - `ids`: a vector of player ids for book dictionary
 """
-mutable struct PlayGame <: AbstractGame
+mutable struct PlayGame{T} <: AbstractGame{T}
     deck::Vector{Card}
-    books::Dict{Int,Vector{Card}}
+    books::Dict{T,Vector{Card}}
     delay::Float64
     num_2_str::Dict{Int,String}
     str_2_num::Dict{String,Int}
@@ -50,12 +50,12 @@ A constructor function for simulation game
 - `n_players`: the number of player
 - `delay`: delay between actions
 """
-function PlayGame(; n_players, delay=1.0)
+function PlayGame(; ids, delay=1.0)
     s = ("A","2","3","4","5","6","7","8","9","T","J","Q","K")
     v = 1:13
     num_2_str = Dict(v => s for (v, s) ∈ zip(v, s))
     str_2_num = Dict(s => v for (s, v) ∈ zip(s, v))
-    books = Dict(id => Card[] for id ∈ 1:n_players)
+    books = Dict(id => Card[] for id ∈ ids)
     return PlayGame(deck(), books, delay, num_2_str, str_2_num)
 end
 
@@ -68,8 +68,8 @@ abstract type AbstractPlayer end
 - `id::Int`: suit of card 
 - `cards::Vector{Card}`: player's cards
 """
-mutable struct Player <: AbstractPlayer
-    id::Int
+mutable struct Player{T} <: AbstractPlayer
+    id::T
     cards::Vector{Card}
 end
 
@@ -92,8 +92,8 @@ end
 - `id::Int`: suit of card 
 - `cards::Vector{Card}`: player's cards
 """
-mutable struct Human <: AbstractPlayer
-    id::Int
+mutable struct Human{T} <: AbstractPlayer
+    id::T
     cards::Vector{Card}
 end
 

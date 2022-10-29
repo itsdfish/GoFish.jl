@@ -2,7 +2,8 @@ function inquire!(game::PlayGame, inquirer, players)
     inquiring = true 
     human = get_human(players)
     while inquiring 
-        id,value = decide(inquirer, keys(players))
+        ids = get_ids(players)
+        id,value = decide(inquirer, ids)
         opponent = players[id]
         sleep(game.delay)
         print_inquiry(game, inquirer, opponent, value)
@@ -55,17 +56,17 @@ function inquire!(game::PlayGame, inquirer, players)
     end
 end
 
-function decide(human::Human, players)
+function decide(human::Human, ids)
     while true 
         println("Select a player id and card then hit enter.")
         show_hand(human)
         input = readline()
         clear_repl()
-        if is_valid(input)
-            id,value = parse_input(input)
+        if is_valid(input, ids)
+            id,value = parse_input(input, ids)
             if id ≠ human.id
             else 
-                println("Cannot ask yourself for a card. Select $(setdiff(keys(players), [human.id]))")
+                println("Cannot ask yourself for a card. Select $(setdiff(ids, [human.id]))")
                 wait_for_key()
                 clear_repl()
                 continue
@@ -85,19 +86,22 @@ function decide(human::Human, players)
     end
 end
 
-function is_valid(input)
+function is_valid(input, ids)
     !contains(input, " ") ? (return false) : nothing
     str = split(input, " ")
-    length(str) ≠ 2 ? (return false) : nothing 
-    f(x) = isa(tryparse(Float64, x), Number) 
-    g(x) = f(x) || (x ∈ ("t","j","k","q","a"))
-    !f(str[1]) || !g(str[2]) ? (return false) : nothing 
+    length(str) ≠ 2 ? (return false) : nothing
+    f(x, ids::Vector{T}) where {T<:Number} = isa(tryparse(T, x), Number)
+    f(x, ids) = true 
+    g(x) = x ∈ ("2","3","3","4","5","6","7","8","9","t","j","k","q","a")
+    !f(str[1], ids) || !g(str[2]) ? (return false) : nothing 
     return true 
 end
 
-function parse_input(input)
+function parse_input(input, ids)
     str = split(input, " ")
-    id = parse(Int, str[1])
+    f(x, ids::Vector{T}) where {T<:Number} = parse(T, x)
+    f(x, ids::Vector{T}) where {T} = T(x) 
+    id = f(str[1], ids)
     dict = Dict("$i" => i for i in 1:9)
     dict["a"] = 1
     dict["t"] = 10
@@ -114,16 +118,9 @@ function show_hand(player)
     println("hand: " * str)
 end
 
-function print_exchange(p1::Human, p2, cards)
-    println("$(get_name(p1)) give $(get_name(p2)) $(show_cards(cards))")
-end
-
 function print_exchange(p1, p2, cards)
-    println("$(get_name(p1)) gives $(get_name(p2)) $(show_cards(cards))")
+    println("$(p1.id) gives $(p2.id) $(show_cards(cards))")
 end
-
-get_name(p) = "player $(p.id)"
-get_name(p::Human) = "you"
 
 function show_cards(cards)
     return mapreduce(c -> string(c) * "  ", *, cards)
@@ -140,25 +137,20 @@ end
 
 function print_inquiry(game, p1, p2, value)
     new_value = game.num_2_str[value]
-    println("$(get_name(p1)) asks $(get_name(p2)) for a $new_value")
+    println("$(p1.id) asks $(p2.id) for a $new_value")
 end
 
 function print_no_card(game, p, value)
     new_value = game.num_2_str[value]
-    println("$(get_name(p)) does not have any $(new_value)s")
-end
-
-function print_no_card(game, p::Human, value)
-    new_value = game.num_2_str[value]
-    println("You do not have any $(new_value)s")
+    println("$(p.id) does not have any $(new_value)s")
 end
 
 function print_go_fish(p, card)
-    println("player $(p.id) received a card")
+    println("$(p.id) received a card")
 end
 
 function print_go_fish(p::Human, card)
-    println("you received a $card")
+    println("$(p.id) received a $(card)")
 end
 
 function clear_repl()
@@ -178,10 +170,9 @@ function get_human(players)
 end
 
 function play(game::PlayGame, players)
-    players[1] = Human(id=1)
     ids = shuffle!(collect(keys(players)))
     deal!(game, players)
-    _players = SortedDict(players)
+    _players = Dict(players)
     while !is_over(game, _players)
         play_round(game, _players, ids)
     end
