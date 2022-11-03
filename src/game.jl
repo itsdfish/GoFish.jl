@@ -92,7 +92,7 @@ This procedure will handle the exchange of cards, update the books, and go fish.
 # Arguments
 - `game`: game object 
 - `inquirer`: the player who asks for cards
-- `players`: a dictionary of players. Keys are integers representing player ids
+- `players`: a dictionary of players.
 """
 function inquire!(game, inquirer, players)
     inquiring = true 
@@ -126,7 +126,6 @@ function inquire!(game, inquirer, players)
                 observe_books!(players, book_map)
                 attempt_replinish!(game, inquirer) ? observe_go_fish!(players, inquirer) : nothing
                 if isempty(inquirer.cards)
-                    inquiring = false
                     delete!(players, inquirer.id)
                 end
             end
@@ -150,7 +149,7 @@ end
 Loop through all players and process the exchange of cards
 
 # Arguments
-- `players`: a dictionary of players. Keys are integers representing player ids
+- `players`: a dictionary of players.
 - `inquirer`: the player who asks for cards
 - `opponent_id`: player id of player who was queried
 - `value`: value of the card in the query 
@@ -169,7 +168,7 @@ Default function which allows a player to observe the exchange of cards between 
 This function must be extended for custom player types.
 
 # Arguments
-- `players`: a dictionary of players. Keys are integers representing player ids
+- `players`: a dictionary of players. 
 - `inquirer_id`: id of the player who asks for cards
 - `opponent_id`: player id of player who was queried
 - `value`: value of the card in the query 
@@ -225,7 +224,7 @@ function play_round(game, players, ids)
     end
 end
 
-function simulate(game, players)
+function simulate!(game, players)
     _players = Dict(players)
     ids = shuffle!(collect(keys(players)))
     while !is_over(game, _players)
@@ -250,12 +249,23 @@ function update_books!(game::AbstractGame{T}, player) where {T}
             push!(book_map, player.id => book)
         end
     end
+    return book_map
 end
 
 function add_book!(game, id, value)
     push!(game.books[id], value)
 end
 
+"""
+    decide(player, ids)
+
+Impliments the player's decision logic and returns a tuple containing
+the id of the player who is queried and the rank of the card.
+
+# Arguments
+- `player`: the player who makes a decision
+- `ids`: a vector of player ids 
+"""
 function decide(player, ids)
     id = rand(setdiff(ids, [player.id]))
     card = rand(player.cards)

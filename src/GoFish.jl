@@ -2,7 +2,8 @@ module GoFish
     using Random
     using PlayingCards52
     export Card, Game, PlayGame, Player, Human
-    export simulate 
+    export AbstractPlayer
+    export simulate! 
     export play
     export deal!
 

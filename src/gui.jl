@@ -47,7 +47,6 @@ function inquire!(game::PlayGame, inquirer, players)
                 wait_for_key()
                 clear_repl()
                 if isempty(inquirer.cards)
-                    inquiring = false
                     delete!(players, inquirer.id)
                 end
             end

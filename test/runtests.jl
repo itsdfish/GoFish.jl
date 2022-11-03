@@ -202,7 +202,7 @@ end
         ids = keys(players)
         game = Game(ids)
         deal!(game, players)
-        simulate(game, players)
+        simulate!(game, players)
         @test isempty(game.deck)
         @test mapreduce(x -> length(x), +, values(game.books)) == 13
     end
