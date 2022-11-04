@@ -160,6 +160,45 @@ end
         @test length(player1.cards) == 4
         @test length(player2.cards) == 1
     end
+
+    @safetestset "4" begin 
+        using GoFish
+        using Test
+        using GoFish: inquire!
+
+        mutable struct TestPlayer{T} <: AbstractPlayer
+            id::T 
+            cards::Vector{Card}
+        end
+
+        function TestPlayer(;id)
+            return TestPlayer(id, Card[])
+        end
+
+        function GoFish.decide(player::TestPlayer, ids)
+            return 2,3
+        end
+    
+        id = 1
+        player1 = TestPlayer(;id)
+    
+        push!(player1.cards, Card(:hearts, 2))
+
+    
+        id = 2
+        player2 = TestPlayer(;id)
+        push!(player2.cards, Card(:spades, 3))
+    
+        game = Game([1,2])
+        game.deck = Card[]
+    
+        players = Dict(1 => player1, 2 => player2)
+        inquire!(game, player1, players)
+        @test length(player1.cards) == 1
+        @test length(player2.cards) == 1
+        @test player1.cards[1] == Card(:hearts, 2)
+        @test player2.cards[1] == Card(:spades, 3)
+    end
 end
 
 @safetestset "correct_completion" begin

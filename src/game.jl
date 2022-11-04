@@ -99,6 +99,7 @@ function inquire!(game, inquirer, players)
     while inquiring 
         ids = get_ids(players)
         id,value = decide(inquirer, ids)
+        has_card(inquirer, value) ? nothing : break
         opponent = players[id]
         if has_card(opponent, value)
             cards = remove!(opponent, value)
