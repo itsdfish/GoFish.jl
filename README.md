@@ -39,7 +39,7 @@ simulate!(game, players)
 The outcome of the simulation can be found with `game.books`. 
 # Creating a Custom Player
 
-GoFish.jl allows you to create a player with custom behavior. The process involves creating a new subtype of `AbstractPlayer` and defining a decision method and three optional methods for tracking the exchange of cards. 
+GoFish.jl allows you to create a player with custom behavior. The process involves creating a new subtype of `AbstractPlayer` and defining a decision method and four optional methods for setup and tracking the exchange of cards. 
 
 At minimum the custom subtype requires a field `id` and `cards`. Additional fields can be included as needed.
 ```julia
@@ -56,22 +56,34 @@ function decide(player::MyPlayer, ids)
     return player_id,card_value
 end
 ```
+
+After the cards are delt, initial setup of the player can be optionally performed in the function `setup!`, which is called once prior to the game begining. The arguments for `setup` are the player and player ids. 
+```julia
+function setup!(player::MyPlayer, ids)
+    # awesomeness goes here
+    return nothing
+end
+```
+
 The player's representation of the game is optionally updated through three methods: `process_exchange!`, `process_go_fish!`, and `process_books!`. The method `process_exchange!` allows the player to observe and process an exchange of cards between the inquirer and the opponent.
 ```julia 
 function process_exchange!(player::MyPlayer, inquirer_id, opponent_id, value, cards)
     # awesomeness goes here
+    return nothing
 end
 ```
 `process_go_fish!` allows the player to observe and that a player received an unknown card after going fish. `process_go_fish!` is also called when a player runs replinishes an empty hand. 
 ```julia 
 function process_go_fish!(player::MyPlayer, inquirer_id)
     # awesomeness goes here
+    return nothing
 end
 ```
 Finally, `process_books!` allows the player to track which cards are no longer in play. The argument `book_map` is a dictionary that maps player id to a vector of cards 
 ```julia
 function process_books!(player::AbstractPlayer, book_map)
     # awesomeness goes here
+    return nothing
 end
 ```
 

@@ -172,6 +172,7 @@ function play(game::PlayGame, players)
     ids = shuffle!(collect(keys(players)))
     deal!(game, players)
     _players = Dict(players)
+    map(p -> setup!(p, ids), values(players))
     while !is_over(game, _players)
         play_round(game, _players, ids)
     end

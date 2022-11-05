@@ -32,6 +32,20 @@ function has_card(player, value)
 end
 
 """
+    setup!(player::AbstractPlayer, ids)
+
+Perform initial setup after cards are delt, but before the game begins.
+
+# Arguments
+
+- `player`: a player object
+- `ids`: all player ids
+"""
+function setup!(player::AbstractPlayer, ids)
+    # intentionally blank
+end
+
+"""
     remove!(player, value)
 
 Remove and return cards of a specified value from a player.
@@ -226,8 +240,9 @@ function play_round(game, players, ids)
 end
 
 function simulate!(game, players)
-    _players = Dict(players)
     ids = shuffle!(collect(keys(players)))
+    _players = Dict(players)
+    map(p -> setup!(p, ids), values(players))
     while !is_over(game, _players)
         play_round(game, _players, ids)
     end

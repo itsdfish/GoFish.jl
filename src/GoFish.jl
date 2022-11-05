@@ -6,6 +6,7 @@ module GoFish
     export simulate! 
     export play
     export deal!
+    export rank
 
     include("structs.jl")
     include("game.jl")
