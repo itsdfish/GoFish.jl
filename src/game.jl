@@ -118,11 +118,11 @@ function inquire!(game, inquirer, players)
         if has_card(opponent, value)
             cards = remove!(opponent, value)
             add!(inquirer, cards)
+            observe_exchange!(players, inquirer, id, value, cards)
             book_map = update_books!(game, inquirer)
             observe_books!(players, book_map)
-            observe_exchange!(players, inquirer, id, value, cards)
-            attempt_replinish!(game, inquirer) ? observe_go_fish!(players, inquirer) : nothing
-            attempt_replinish!(game, opponent) ? observe_go_fish!(players, opponent) : nothing
+            attempt_replinish!(game, players, inquirer) ? observe_go_fish!(players, inquirer) : nothing
+            attempt_replinish!(game, players, opponent) ? observe_go_fish!(players, opponent) : nothing
             # remove players if empty after attempting to replinish
             if isempty(inquirer.cards)
                 inquiring = false
@@ -139,7 +139,7 @@ function inquire!(game, inquirer, players)
                 observe_go_fish!(players, inquirer)
                 book_map = update_books!(game, inquirer)
                 observe_books!(players, book_map)
-                attempt_replinish!(game, inquirer) ? observe_go_fish!(players, inquirer) : nothing
+                attempt_replinish!(game, players, inquirer) ? observe_go_fish!(players, inquirer) : nothing
                 if isempty(inquirer.cards)
                     delete!(players, inquirer.id)
                 end
@@ -149,10 +149,11 @@ function inquire!(game, inquirer, players)
     end
 end
 
-function attempt_replinish!(game, player)
+function attempt_replinish!(game, players, player)
     if isempty(player.cards) && !isempty(game.deck)
         card = go_fish(game)
         push!(player.cards, card)
+        observe_go_fish!(players, player)
        return true
     end
     return false

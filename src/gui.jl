@@ -9,13 +9,13 @@ function inquire!(game::PlayGame, inquirer, players)
         print_inquiry(game, inquirer, opponent, value)
         if has_card(opponent, value)
             cards = remove!(opponent, value)
-            print_exchange(opponent, inquirer, cards)
-            observe_exchange!(players, inquirer, id, value, cards)
             add!(inquirer, cards)
+            observe_exchange!(players, inquirer, id, value, cards)
+            print_exchange(opponent, inquirer, cards)
             book_map = update_books!(game, inquirer)
             observe_books!(players, book_map)
-            attempt_replinish!(game, inquirer) ? observe_go_fish!(players, inquirer) : nothing
-            attempt_replinish!(game, opponent) ? observe_go_fish!(players, opponent) : nothing
+            attempt_replinish!(game, players, inquirer) ? observe_go_fish!(players, inquirer) : nothing
+            attempt_replinish!(game, players, opponent) ? observe_go_fish!(players, opponent) : nothing
             show_hand(human)
             wait_for_key()
             clear_repl()
