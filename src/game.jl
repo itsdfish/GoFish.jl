@@ -235,6 +235,7 @@ end
 
 function play_round(game, players, ids)
     for id ∈ ids
+        id ∈ keys(players) ? nothing : continue
         inquire!(game, players[id], players) 
         is_over(game, players) ? break : nothing
     end
