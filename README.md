@@ -74,7 +74,7 @@ end
 ```
 `process_go_fish!` allows the player to observe and that a player received an unknown card after going fish. `process_go_fish!` is also called when a player runs replinishes an empty hand. 
 ```julia 
-function process_go_fish!(player::MyPlayer, inquirer_id)
+function process_go_fish!(player::MyPlayer, inquirer_id, n_cards)
     # awesomeness goes here
     return nothing
 end
