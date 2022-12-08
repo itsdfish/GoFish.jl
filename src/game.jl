@@ -121,8 +121,8 @@ function inquire!(game, inquirer, players)
             observe_exchange!(players, inquirer, id, value, cards)
             book_map = update_books!(game, inquirer)
             observe_books!(players, book_map)
-            attempt_replinish!(game, players, inquirer) ? observe_go_fish!(players, inquirer) : nothing
-            attempt_replinish!(game, players, opponent) ? observe_go_fish!(players, opponent) : nothing
+            attempt_replinish!(game, players, inquirer)
+            attempt_replinish!(game, players, opponent)
             # remove players if empty after attempting to replinish
             if isempty(inquirer.cards)
                 inquiring = false
@@ -139,7 +139,7 @@ function inquire!(game, inquirer, players)
                 observe_go_fish!(players, inquirer)
                 book_map = update_books!(game, inquirer)
                 observe_books!(players, book_map)
-                attempt_replinish!(game, players, inquirer) ? observe_go_fish!(players, inquirer) : nothing
+                attempt_replinish!(game, players, inquirer)
                 if isempty(inquirer.cards)
                     delete!(players, inquirer.id)
                 end
@@ -151,9 +151,12 @@ end
 
 function attempt_replinish!(game, players, player)
     if isempty(player.cards) && !isempty(game.deck)
-        card = go_fish(game)
-        push!(player.cards, card)
-        observe_go_fish!(players, player)
+        n_cards = min(game.hand_size, length(game.deck))
+        cards = splice!(game.deck, 1:n_cards)
+        push!(player.cards, cards...)
+        observe_go_fish!(players, player, n_cards)
+        book_map = update_books!(game, player)
+        observe_books!(players, book_map)
        return true
     end
     return false
@@ -194,9 +197,9 @@ function process_exchange!(player::AbstractPlayer, inquirer_id, opponent_id, val
     # intentionally blank
 end
 
-function observe_go_fish!(players, inquirer)
+function observe_go_fish!(players, inquirer, n_cards=1)
     for (k, p) ∈ players 
-        process_go_fish!(p, inquirer.id)
+        process_go_fish!(p, inquirer.id, n_cards)
     end
 end
 
@@ -210,7 +213,7 @@ This function must be extended for custom player types.
 - `player`: the player which is updated
 - `inquirer_id`: id of the player who asks for cards
 """
-function process_go_fish!(player::AbstractPlayer, inquirer_id)
+function process_go_fish!(player::AbstractPlayer, inquirer_id, n_cards)
     # intentionally blank
 end
 

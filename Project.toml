@@ -1,7 +1,7 @@
 name = "GoFish"
 uuid = "d00ce6d8-e47b-41eb-9812-442785832f3b"
 authors = ["itsdfish"]
-version = "0.1.2"
+version = "0.2.0"
 
 [deps]
 PlayingCards52 = "c2ceccfa-fa3a-4f0d-8d5f-27465c1854bf"

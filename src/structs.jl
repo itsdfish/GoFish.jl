@@ -6,10 +6,12 @@ abstract type AbstractGame{T} end
 # Fields 
 - `deck`: deck of cards 
 - `book`: a dictionary containing player id and card value:  `id => value`
+- `hand_size`: maximum number of cards in each player's hand
 """
 mutable struct Game{T} <: AbstractGame{T} 
     deck::Vector{Card}
     books::Dict{T,Vector{Card}}
+    hand_size::Int
 end
 
 """
@@ -22,7 +24,8 @@ A constructor function for simulation game
 """
 function Game(ids)
     books = Dict(id => Card[] for id ∈ ids)
-    return Game(deck(), books)
+    hand_size = length(ids) > 3 ? 5 : 7
+    return Game(deck(), books, hand_size)
 end
 
 """

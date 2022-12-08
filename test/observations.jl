@@ -21,8 +21,9 @@ function TestPlayer(;id)
         process_books!, setup!, process_exchange!)
 end
 
-function process_go_fish!(player::TestPlayer, inquirer_id)
+function process_go_fish!(player::TestPlayer, inquirer_id, n_cards)
     player.process_go_fish![:inquirer_id] = inquirer_id
+    player.process_go_fish![:n_cards] = n_cards
 end
 
 function process_books!(player::TestPlayer, book_map)

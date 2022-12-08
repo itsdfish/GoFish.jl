@@ -93,17 +93,17 @@ end
         push!(player2.cards, Card(:spades, 2))
     
         game = Game([1,2])
-        game.deck = [Card(:clubs, 3), Card(:clubs, 4)]
+        game.deck = [Card(:clubs, 3), Card(:spades, 3),Card(:diamonds, 3), Card(:hearts, 3)]
     
         players = Dict(1 => player1, 2 => player2)
         inquire!(game, player1, players)
-        @test length(game.books[1]) == 1
+        @test length(game.books[1]) == 2
         @test game.books[1][1].rnk == 2
         @test isempty(game.deck)
-        @test length(player1.cards) == 1
-        @test length(player2.cards) == 1
-        @test player1.cards[1] == Card(:clubs, 3)
-        @test player2.cards[1] == Card(:clubs, 4)
+        @test length(player1.cards) == 0
+        @test length(player2.cards) == 0
+        # @test player1.cards[1] == Card(:clubs, 3)
+        # @test player2.cards[1] == Card(:clubs, 4)
     end
 
     @safetestset "2" begin 
@@ -169,6 +169,7 @@ end
         using Test
         using GoFish: inquire!
 
+
         mutable struct TestPlayer{T} <: AbstractPlayer
             id::T 
             cards::Vector{Card}
@@ -208,6 +209,7 @@ end
         using GoFish
         using Test
         using GoFish: inquire!
+
         mutable struct TestPlayer{T} <: AbstractPlayer
             id::T 
             cards::Vector{Card}
@@ -290,6 +292,47 @@ end
         @test isempty(setdiff(player1.cards, p1_cards))
         @test isempty(setdiff(player2.cards, p2_cards))
     end
+
+    @safetestset "7" begin 
+        using GoFish
+        using Test
+        using GoFish: inquire!
+        mutable struct TestPlayer{T} <: AbstractPlayer
+            id::T 
+            cards::Vector{Card}
+        end
+
+        function TestPlayer(;id)
+            return TestPlayer(id, Card[])
+        end
+
+        function GoFish.decide(player::TestPlayer, ids)
+            return 2,2
+        end
+
+        id = 1
+        player1 = TestPlayer(;id)
+    
+        push!(player1.cards, Card(:hearts, 2))
+        push!(player1.cards, Card(:clubs, 2))
+    
+        id = 2
+        player2 = TestPlayer(;id)
+        push!(player2.cards, Card(:spades, 2))
+        push!(player2.cards, Card(:spades, 2))
+    
+        game = Game([1,2])
+        game.deck = [Card(:clubs, 7)]
+    
+        players = Dict(1 => player1, 2 => player2)
+        inquire!(game, player1, players)
+        @test length(game.books[1]) == 1
+        @test game.deck == []
+        @test length(player1.cards) == 1
+        @test length(player2.cards) == 0
+        @test length(players) == 1
+        @test 1 ∈ keys(players)
+    end
 end
 
 @safetestset "observations" begin 
@@ -322,6 +365,8 @@ end
 
     @test player1.process_go_fish![:inquirer_id] ∈ [1,2]
     @test player2.process_go_fish![:inquirer_id] ∈ [1,2]
+    @test player1.process_go_fish![:n_cards] == 1
+    @test player2.process_go_fish![:n_cards] == 1
 
     @test !isempty(player1.process_books![:book_map])
     @test !isempty(player2.process_books![:book_map])
