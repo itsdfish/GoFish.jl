@@ -14,14 +14,14 @@ makedocs(
         collapselevel = 1
     ),
     modules = [
-        GoFish,
+        GoFish
         # Base.get_extension(GoFish, :TuringExt),
         # Base.get_extension(GoFish, :NamedArraysExt)
     ],
     pages = [
         "Home" => "index.md",
-        "Model Overview" => "overview.md",
-        "Example" => "example.md",
+        "Playing Go Fish" => "play.md",
+        "Simulating Go Fish" => "example.md",
         "API" => "api.md"
     ]
 )
