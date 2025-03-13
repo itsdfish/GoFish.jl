@@ -315,10 +315,10 @@ Returns a vector of winners. In the event of a tie, there will not be a unique w
 
 - `game`: game object 
 """
-function get_winners(game::AbstractGame{T}) where T
-    max_books,_ = findmax(x -> length(x), game.books)
+function get_winners(game::AbstractGame{T}) where {T}
+    max_books, _ = findmax(x -> length(x), game.books)
     winners = T[]
-    for (k,v) ∈ game.books 
+    for (k, v) ∈ game.books
         length(v) == max_books ? push!(winners, k) : nothing
     end
     return winners

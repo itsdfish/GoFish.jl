@@ -529,14 +529,14 @@ end
     end
 end
 
-@safetestset "get winners" begin 
+@safetestset "get winners" begin
     using GoFish
     using Test
 
-    game = Game([:a,:b,:c])
-    game.books[:a] = [Card(),Card(),Card()]
-    game.books[:b] = [Card(),Card()]
-    game.books[:c] = [Card(),Card(),Card()]
+    game = Game([:a, :b, :c])
+    game.books[:a] = [Card(), Card(), Card()]
+    game.books[:b] = [Card(), Card()]
+    game.books[:c] = [Card(), Card(), Card()]
     winners = get_winners(game)
 
     @test :a ∈ winners && :c ∈ winners
