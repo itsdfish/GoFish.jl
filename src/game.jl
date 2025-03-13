@@ -5,6 +5,7 @@ Randomizes and deals cards to each player. Each player recieves 7 cards if the n
 is 1-3; otherwise, each player recieves 5 cards.
 
 # Arguments
+
 - `game`: a game object 
 - `players`: a dictionary of players 
 """
@@ -51,6 +52,7 @@ end
 Remove and return cards of a specified value from a player.
 
 # Arguments
+
 - `player`: a player object
 - `value`: value or rank of a card
 """
@@ -65,6 +67,7 @@ end
 Add a vector of cards to a player's hand. 
 
 # Arguments
+
 - `player`: a player object
 - `cards`: a vector of card objects
 """
@@ -78,6 +81,7 @@ end
 Add a card to a player's hand. 
 
 # Arguments
+
 - `player`: a player object
 - `card`: a card objects
 """
@@ -104,6 +108,7 @@ The primary inquiry loop in which a player asks other plays for cards.
 This procedure will handle the exchange of cards, update the books, and go fish. 
 
 # Arguments
+
 - `game`: game object 
 - `inquirer`: the player who asks for cards
 - `players`: a dictionary of players.
@@ -168,6 +173,7 @@ end
 Loop through all players and process the exchange of cards
 
 # Arguments
+
 - `players`: a dictionary of players.
 - `inquirer`: the player who asks for cards
 - `opponent_id`: player id of player who was queried
@@ -187,6 +193,7 @@ Default function which allows a player to observe the exchange of cards between 
 This function must be extended for custom player types.
 
 # Arguments
+
 - `players`: a dictionary of players. 
 - `inquirer_id`: id of the player who asks for cards
 - `opponent_id`: player id of player who was queried
@@ -209,7 +216,9 @@ end
 Process the result of a go fish. 
 
 This function must be extended for custom player types.
+
 # Arguments
+
 - `player`: the player which is updated
 - `inquirer_id`: id of the player who asks for cards
 """
@@ -229,6 +238,7 @@ end
 Allow the player to track the cards that are no longer in play.
 
 # Arguments
+
 - `player`: the player which is updated
 - `book_map`: a dictionary with player id as key and new book as vector of cards
 """
@@ -284,6 +294,7 @@ Impliments the player's decision logic and returns a tuple containing
 the id of the player who is queried and the rank of the card.
 
 # Arguments
+
 - `player`: the player who makes a decision
 - `ids`: a vector of player ids 
 """
@@ -294,3 +305,21 @@ function decide(player, ids)
 end
 
 get_ids(players) = keys(players) |> collect
+
+"""
+    get_winners(game::AbstractGame{T})
+
+Returns a vector of winners. In the event of a tie, there will not be a unique winner. 
+
+# Arguments
+
+- `game`: game object 
+"""
+function get_winners(game::AbstractGame{T}) where T
+    max_books,_ = findmax(x -> length(x), game.books)
+    winners = T[]
+    for (k,v) ∈ game.books 
+        length(v) == max_books ? push!(winners, k) : nothing
+    end
+    return winners
+end

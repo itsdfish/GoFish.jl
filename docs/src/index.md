@@ -9,14 +9,7 @@ GoFish.jl is a Julia package for playing and simulating the card game Go Fish.
 
 You can optionally use [VsCode](https://code.visualstudio.com/) with the Julia VsCode [plugin](https://code.visualstudio.com/docs/languages/julia)
 
-2. Add itsdfish's private package registry by pasting the following into the Julia REPL:
-
-```julia
-using Pkg
-pkg"registry add https://github.com/itsdfish/Registry.jl"
-```
-
-3. Enter the package mode by hitting `]` and type the following:
+2. Enter the package mode by hitting `]` and type the following:
 
 ```julia
 add GoFish

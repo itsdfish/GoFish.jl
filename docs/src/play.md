@@ -11,4 +11,4 @@ game = PlayGame(;ids = ids)
 play(game, players)
 ```
 
-<img src="resources/GoFish.gif" />
+![alt text](./../resources/GoFish.gif)

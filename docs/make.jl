@@ -15,8 +15,8 @@ makedocs(
     ),
     modules = [
         GoFish
-        # Base.get_extension(GoFish, :TuringExt),
-        # Base.get_extension(GoFish, :NamedArraysExt)
+    # Base.get_extension(GoFish, :TuringExt),
+    # Base.get_extension(GoFish, :NamedArraysExt)
     ],
     pages = [
         "Home" => "index.md",
