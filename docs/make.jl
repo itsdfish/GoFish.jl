@@ -14,7 +14,7 @@ makedocs(
         collapselevel = 1
     ),
     modules = [
-        GoFish,
+        GoFish
         # Base.get_extension(GoFish, :TuringExt),
         # Base.get_extension(GoFish, :NamedArraysExt)
     ],
