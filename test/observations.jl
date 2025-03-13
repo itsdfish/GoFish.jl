@@ -4,20 +4,20 @@ import GoFish: process_go_fish!
 import GoFish: setup!
 
 mutable struct TestPlayer{T} <: AbstractPlayer
-    id::T 
+    id::T
     cards::Vector{Card}
-    process_go_fish!::Dict{Symbol,Any}
-    process_books!::Dict{Symbol,Any}
-    setup!::Dict{Symbol,Any}
-    process_exchange!::Dict{Symbol,Any}
+    process_go_fish!::Dict{Symbol, Any}
+    process_books!::Dict{Symbol, Any}
+    setup!::Dict{Symbol, Any}
+    process_exchange!::Dict{Symbol, Any}
 end
 
-function TestPlayer(;id)
-    process_go_fish! = Dict{Symbol,Any}()
-    process_books! = Dict{Symbol,Any}()
-    setup! = Dict{Symbol,Any}()
-    process_exchange! = Dict{Symbol,Any}()
-    return TestPlayer(id, Card[], process_go_fish!, 
+function TestPlayer(; id)
+    process_go_fish! = Dict{Symbol, Any}()
+    process_books! = Dict{Symbol, Any}()
+    setup! = Dict{Symbol, Any}()
+    process_exchange! = Dict{Symbol, Any}()
+    return TestPlayer(id, Card[], process_go_fish!,
         process_books!, setup!, process_exchange!)
 end
 

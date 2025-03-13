@@ -1,40 +1,40 @@
 using SafeTestsets
 using Test
 
-@safetestset "remove!" begin 
+@safetestset "remove!" begin
     using GoFish
     using Test
     using GoFish: remove!
 
     id = 1
-    player = Player(;id)
+    player = Player(; id)
     push!(player.cards, Card(:hearts, 1))
     push!(player.cards, Card(:hearts, 2))
     push!(player.cards, Card(:clubs, 2))
-    
+
     removed_cards = remove!(player, 2)
     @test length(removed_cards) == 2
     @test Card(:hearts, 2) ∈ removed_cards
     @test Card(:clubs, 2) ∈ removed_cards
     @test length(player.cards) == 1
     @test Card(:hearts, 1) ∈ player.cards
-end 
+end
 
-@safetestset "has_card" begin 
+@safetestset "has_card" begin
     using GoFish
     using Test
     using GoFish: has_card
 
     id = 1
-    player = Player(;id)
+    player = Player(; id)
     push!(player.cards, Card(:hearts, 1))
     push!(player.cards, Card(:hearts, 2))
     push!(player.cards, Card(:clubs, 2))
-    
+
     @test has_card(player, 1)
     @test has_card(player, 2)
     @test !has_card(player, 11)
-end 
+end
 
 @safetestset "go_fish" begin
     using GoFish
@@ -42,10 +42,10 @@ end
     using GoFish: go_fish
 
     id = 1
-    player = Player(;id)
+    player = Player(; id)
     game = Game([id])
     test_card = game.deck[1]
-    
+
     @test length(game.deck) == 52
     card = go_fish(game)
     @test length(game.deck) == 51
@@ -58,7 +58,7 @@ end
     using GoFish: update_books!
 
     id = 1
-    player = Player(;id)
+    player = Player(; id)
     game = Game([id])
 
     push!(player.cards, Card(:hearts, 1))
@@ -76,25 +76,26 @@ end
 end
 
 @testset verbose = true "inquire!" begin
-    @safetestset "1" begin 
+    @safetestset "1" begin
         using GoFish
         using Test
         using GoFish: inquire!
-    
+
         id = 1
-        player1 = Player(;id)
-    
+        player1 = Player(; id)
+
         push!(player1.cards, Card(:hearts, 2))
         push!(player1.cards, Card(:clubs, 2))
         push!(player1.cards, Card(:diamonds, 2))
-    
+
         id = 2
-        player2 = Player(;id)
+        player2 = Player(; id)
         push!(player2.cards, Card(:spades, 2))
-    
-        game = Game([1,2])
-        game.deck = [Card(:clubs, 3), Card(:spades, 3),Card(:diamonds, 3), Card(:hearts, 3)]
-    
+
+        game = Game([1, 2])
+        game.deck =
+            [Card(:clubs, 3), Card(:spades, 3), Card(:diamonds, 3), Card(:hearts, 3)]
+
         players = Dict(1 => player1, 2 => player2)
         inquire!(game, player1, players)
         @test length(game.books[1]) == 2
@@ -106,25 +107,25 @@ end
         # @test player2.cards[1] == Card(:clubs, 4)
     end
 
-    @safetestset "2" begin 
+    @safetestset "2" begin
         using GoFish
         using Test
         using GoFish: inquire!
-    
+
         id = 1
-        player1 = Player(;id)
-    
+        player1 = Player(; id)
+
         push!(player1.cards, Card(:hearts, 2))
         push!(player1.cards, Card(:clubs, 2))
         push!(player1.cards, Card(:diamonds, 2))
-    
+
         id = 2
-        player2 = Player(;id)
+        player2 = Player(; id)
         push!(player2.cards, Card(:spades, 2))
-    
-        game = Game([1,2])
+
+        game = Game([1, 2])
         empty!(game.deck)
-    
+
         players = Dict(1 => player1, 2 => player2)
         _players = Dict(players)
         inquire!(game, player1, players)
@@ -136,25 +137,25 @@ end
         @test length(players) == 0
     end
 
-    @safetestset "3" begin 
+    @safetestset "3" begin
         using GoFish
         using Test
         using GoFish: inquire!
-    
+
         id = 1
-        player1 = Player(;id)
-    
+        player1 = Player(; id)
+
         push!(player1.cards, Card(:hearts, 2))
         push!(player1.cards, Card(:clubs, 2))
         push!(player1.cards, Card(:diamonds, 2))
-    
+
         id = 2
-        player2 = Player(;id)
+        player2 = Player(; id)
         push!(player2.cards, Card(:spades, 3))
-    
-        game = Game([1,2])
-        game.deck = [Card(:diamonds, 10),Card(:diamonds, 11)]
-    
+
+        game = Game([1, 2])
+        game.deck = [Card(:diamonds, 10), Card(:diamonds, 11)]
+
         players = Dict(1 => player1, 2 => player2)
         inquire!(game, player1, players)
 
@@ -164,38 +165,36 @@ end
         @test length(player2.cards) == 1
     end
 
-    @safetestset "4" begin 
+    @safetestset "4" begin
         using GoFish
         using Test
         using GoFish: inquire!
 
-
         mutable struct TestPlayer{T} <: AbstractPlayer
-            id::T 
+            id::T
             cards::Vector{Card}
         end
 
-        function TestPlayer(;id)
+        function TestPlayer(; id)
             return TestPlayer(id, Card[])
         end
 
         function GoFish.decide(player::TestPlayer, ids)
-            return 2,3
+            return 2, 3
         end
-    
+
         id = 1
-        player1 = TestPlayer(;id)
-    
+        player1 = TestPlayer(; id)
+
         push!(player1.cards, Card(:hearts, 2))
 
-    
         id = 2
-        player2 = TestPlayer(;id)
+        player2 = TestPlayer(; id)
         push!(player2.cards, Card(:spades, 3))
-    
-        game = Game([1,2])
+
+        game = Game([1, 2])
         game.deck = Card[]
-    
+
         players = Dict(1 => player1, 2 => player2)
         inquire!(game, player1, players)
         # no change because player 1 does not have a 3
@@ -205,81 +204,87 @@ end
         @test player2.cards[1] == Card(:spades, 3)
     end
 
-    @safetestset "5" begin 
+    @safetestset "5" begin
         using GoFish
         using Test
         using GoFish: inquire!
 
         mutable struct TestPlayer{T} <: AbstractPlayer
-            id::T 
+            id::T
             cards::Vector{Card}
         end
 
-        function TestPlayer(;id)
+        function TestPlayer(; id)
             return TestPlayer(id, Card[])
         end
 
         function GoFish.decide(player::TestPlayer, ids)
-            return 2,3
+            return 2, 3
         end
 
         id = 1
-        player1 = TestPlayer(;id)
-    
+        player1 = TestPlayer(; id)
+
         push!(player1.cards, Card(:hearts, 2))
         push!(player1.cards, Card(:clubs, 2))
         push!(player1.cards, Card(:diamonds, 3))
-    
+
         id = 2
-        player2 = TestPlayer(;id)
+        player2 = TestPlayer(; id)
         push!(player2.cards, Card(:spades, 3))
         push!(player2.cards, Card(:spades, 4))
-    
-        game = Game([1,2])
+
+        game = Game([1, 2])
         game.deck = [Card(:clubs, 7)]
-    
+
         players = Dict(1 => player1, 2 => player2)
         inquire!(game, player1, players)
         @test length(game.books[1]) == 0
         @test isempty(game.deck)
         @test length(player1.cards) == 5
         @test length(player2.cards) == 1
-        p1_cards =[Card(:hearts, 2), Card(:clubs, 2), Card(:diamonds, 3), Card(:spades, 3), Card(:clubs, 7)]
+        p1_cards = [
+            Card(:hearts, 2),
+            Card(:clubs, 2),
+            Card(:diamonds, 3),
+            Card(:spades, 3),
+            Card(:clubs, 7)
+        ]
         @test isempty(setdiff(player1.cards, p1_cards))
         @test player2.cards[1] == Card(:spades, 4)
     end
 
-    @safetestset "6" begin 
+    @safetestset "6" begin
         using GoFish
         using Test
         using GoFish: inquire!
         mutable struct TestPlayer{T} <: AbstractPlayer
-            id::T 
+            id::T
             cards::Vector{Card}
         end
 
-        function TestPlayer(;id)
+        function TestPlayer(; id)
             return TestPlayer(id, Card[])
         end
 
         function GoFish.decide(player::TestPlayer, ids)
-            return 2,3
+            return 2, 3
         end
 
         id = 1
-        player1 = TestPlayer(;id)
-    
+        player1 = TestPlayer(; id)
+
         push!(player1.cards, Card(:hearts, 2))
         push!(player1.cards, Card(:clubs, 2))
-    
+
         id = 2
-        player2 = TestPlayer(;id)
+        player2 = TestPlayer(; id)
         push!(player2.cards, Card(:spades, 3))
         push!(player2.cards, Card(:spades, 4))
-    
-        game = Game([1,2])
+
+        game = Game([1, 2])
         game.deck = [Card(:clubs, 7)]
-    
+
         players = Dict(1 => player1, 2 => player2)
         # player 1's inquiry should be ignored because player 1 does not have a 3
         inquire!(game, player1, players)
@@ -293,37 +298,37 @@ end
         @test isempty(setdiff(player2.cards, p2_cards))
     end
 
-    @safetestset "7" begin 
+    @safetestset "7" begin
         using GoFish
         using Test
         using GoFish: inquire!
         mutable struct TestPlayer{T} <: AbstractPlayer
-            id::T 
+            id::T
             cards::Vector{Card}
         end
 
-        function TestPlayer(;id)
+        function TestPlayer(; id)
             return TestPlayer(id, Card[])
         end
 
         function GoFish.decide(player::TestPlayer, ids)
-            return 2,2
+            return 2, 2
         end
 
         id = 1
-        player1 = TestPlayer(;id)
-    
+        player1 = TestPlayer(; id)
+
         push!(player1.cards, Card(:hearts, 2))
         push!(player1.cards, Card(:clubs, 2))
-    
+
         id = 2
-        player2 = TestPlayer(;id)
+        player2 = TestPlayer(; id)
         push!(player2.cards, Card(:spades, 2))
         push!(player2.cards, Card(:spades, 2))
-    
-        game = Game([1,2])
+
+        game = Game([1, 2])
         game.deck = [Card(:clubs, 7)]
-    
+
         players = Dict(1 => player1, 2 => player2)
         inquire!(game, player1, players)
         @test length(game.books[1]) == 1
@@ -335,26 +340,26 @@ end
     end
 end
 
-@safetestset "observations" begin 
+@safetestset "observations" begin
     using GoFish
     using Test
     include("observations.jl")
-    
+
     id = 1
-    player1 = TestPlayer(;id)
+    player1 = TestPlayer(; id)
 
     push!(player1.cards, Card(:hearts, 2))
     push!(player1.cards, Card(:clubs, 2))
 
     id = 2
-    player2 = TestPlayer(;id)
+    player2 = TestPlayer(; id)
     push!(player2.cards, Card(:spades, 2))
     push!(player2.cards, Card(:diamonds, 3))
     push!(player2.cards, Card(:spades, 3))
     push!(player2.cards, Card(:hearts, 3))
 
-    game = Game([1,2])
-    game.deck = [Card(:diamonds, 2),Card(:clubs, 3)]
+    game = Game([1, 2])
+    game.deck = [Card(:diamonds, 2), Card(:clubs, 3)]
 
     players = Dict(1 => player1, 2 => player2)
     simulate!(game, players)
@@ -363,25 +368,25 @@ end
     @test length(player1.cards) == 0
     @test length(player2.cards) == 0
 
-    @test player1.process_go_fish![:inquirer_id] ∈ [1,2]
-    @test player2.process_go_fish![:inquirer_id] ∈ [1,2]
+    @test player1.process_go_fish![:inquirer_id] ∈ [1, 2]
+    @test player2.process_go_fish![:inquirer_id] ∈ [1, 2]
     @test player1.process_go_fish![:n_cards] == 1
     @test player2.process_go_fish![:n_cards] == 1
 
     @test !isempty(player1.process_books![:book_map])
     @test !isempty(player2.process_books![:book_map])
 
-    @test setdiff!(player1.setup![:ids], [1,2]) == []
-    @test setdiff!(player2.setup![:ids], [1,2]) == []
+    @test setdiff!(player1.setup![:ids], [1, 2]) == []
+    @test setdiff!(player2.setup![:ids], [1, 2]) == []
 
-    @test player1.process_exchange![:inquirer_id] ∈ [1,2]
-    @test player2.process_exchange![:inquirer_id] ∈ [1,2]
-    @test player1.process_exchange![:opponent_id] ∈ [1,2]
-    @test player2.process_exchange![:opponent_id] ∈ [1,2]
-    @test player1.process_exchange![:value] ∈ [3,2]
-    @test player2.process_exchange![:value] ∈ [3,2]
-    @test isa(player1.process_exchange![:cards], Vector{Card}) 
-    @test isa(player2.process_exchange![:cards], Vector{Card}) 
+    @test player1.process_exchange![:inquirer_id] ∈ [1, 2]
+    @test player2.process_exchange![:inquirer_id] ∈ [1, 2]
+    @test player1.process_exchange![:opponent_id] ∈ [1, 2]
+    @test player2.process_exchange![:opponent_id] ∈ [1, 2]
+    @test player1.process_exchange![:value] ∈ [3, 2]
+    @test player2.process_exchange![:value] ∈ [3, 2]
+    @test isa(player1.process_exchange![:cards], Vector{Card})
+    @test isa(player2.process_exchange![:cards], Vector{Card})
 end
 
 @safetestset "correct_completion" begin
@@ -391,23 +396,23 @@ end
     using GoFish: deal!
     Random.seed!(8574)
 
-    players = Dict{Int,Player}(id => Player(;id) for id in 1:3)
+    players = Dict{Int, Player}(id => Player(; id) for id = 1:3)
     ids = keys(players)
     game = Game(ids)
     deal!(game, players)
 
     @test length(game.deck) == (52 - 3 * 7)
-    for (k,p) ∈ players 
+    for (k, p) ∈ players
         @test length(p.cards) == 7
     end
 
-    players = Dict{Int,Player}(id => Player(;id) for id in 1:5)
+    players = Dict{Int, Player}(id => Player(; id) for id = 1:5)
     ids = keys(players)
     game = Game(ids)
     deal!(game, players)
 
     @test length(game.deck) == (52 - 5 * 5)
-    for (k,p) ∈ players 
+    for (k, p) ∈ players
         @test length(p.cards) == 5
     end
 end
@@ -419,8 +424,8 @@ end
     using GoFish: deal!
     Random.seed!(8574)
 
-    for i in 1:100
-        players = Dict{Int,Player}(id => Player(;id) for id in 1:3)
+    for i = 1:100
+        players = Dict{Int, Player}(id => Player(; id) for id = 1:3)
         ids = keys(players)
         game = Game(ids)
         deal!(game, players)
@@ -430,14 +435,14 @@ end
     end
 end
 
-@safetestset "is_valid" begin 
+@safetestset "is_valid" begin
     @safetestset "1" begin
         using GoFish
         using Test
         using Random
         using GoFish: is_valid
 
-        ids = [1,2,3]
+        ids = [1, 2, 3]
         input = ""
         @test !is_valid(input, ids)
 
@@ -463,7 +468,7 @@ end
         using Random
         using GoFish: is_valid
 
-        ids = [:a,:b]
+        ids = [:a, :b]
         input = ""
         @test !is_valid(input, ids)
 
@@ -484,24 +489,24 @@ end
     end
 end
 
-@testset "parse_input" begin 
+@testset "parse_input" begin
     @safetestset "1" begin
         using GoFish
         using Test
         using Random
         using GoFish: parse_input
 
-        ids = [1,2,3]
+        ids = [1, 2, 3]
         input = "1 3"
-        id,value = parse_input(input, ids)
+        id, value = parse_input(input, ids)
         @test id == 1
-        @test value == 3 
+        @test value == 3
 
-        ids = [1,2,3]
+        ids = [1, 2, 3]
         input = "1 a"
-        id,value = parse_input(input, ids)
+        id, value = parse_input(input, ids)
         @test id == 1
-        @test value == 1 
+        @test value == 1
     end
 
     @safetestset "2" begin
@@ -510,16 +515,16 @@ end
         using Random
         using GoFish: parse_input
 
-        ids = [:a,:b]
+        ids = [:a, :b]
         input = "a 3"
-        id,value = parse_input(input, ids)
+        id, value = parse_input(input, ids)
         @test id == :a
-        @test value == 3 
+        @test value == 3
 
-        ids = [:a,:b]
+        ids = [:a, :b]
         input = "a a"
-        id,value = parse_input(input, ids)
+        id, value = parse_input(input, ids)
         @test id == :a
-        @test value == 1 
+        @test value == 1
     end
 end

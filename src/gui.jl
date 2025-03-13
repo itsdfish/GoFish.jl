@@ -1,9 +1,9 @@
 function inquire!(game::PlayGame, inquirer, players)
-    inquiring = true 
+    inquiring = true
     human = get_human(players)
-    while inquiring 
+    while inquiring
         ids = get_ids(players)
-        id,value = decide(inquirer, ids)
+        id, value = decide(inquirer, ids)
         opponent = players[id]
         sleep(game.delay)
         print_inquiry(game, inquirer, opponent, value)
@@ -14,8 +14,10 @@ function inquire!(game::PlayGame, inquirer, players)
             print_exchange(opponent, inquirer, cards)
             book_map = update_books!(game, inquirer)
             observe_books!(players, book_map)
-            attempt_replinish!(game, players, inquirer) ? observe_go_fish!(players, inquirer) : nothing
-            attempt_replinish!(game, players, opponent) ? observe_go_fish!(players, opponent) : nothing
+            attempt_replinish!(game, players, inquirer) ?
+            observe_go_fish!(players, inquirer) : nothing
+            attempt_replinish!(game, players, opponent) ?
+            observe_go_fish!(players, opponent) : nothing
             show_hand(human)
             wait_for_key()
             clear_repl()
@@ -28,7 +30,7 @@ function inquire!(game::PlayGame, inquirer, players)
                 delete!(players, opponent.id)
             end
         else
-            observe_exchange!(players, inquirer, id, value) 
+            observe_exchange!(players, inquirer, id, value)
             print_no_card(game, opponent, value)
             show_hand(human)
             wait_for_key()
@@ -42,7 +44,8 @@ function inquire!(game::PlayGame, inquirer, players)
                 observe_go_fish!(players, inquirer)
                 book_map = update_books!(game, inquirer)
                 observe_books!(players, book_map)
-                attempt_replinish!(game, inquirer) ? observe_go_fish!(players, inquirer) : nothing
+                attempt_replinish!(game, inquirer) ? observe_go_fish!(players, inquirer) :
+                nothing
                 show_hand(human)
                 wait_for_key()
                 clear_repl()
@@ -56,26 +59,26 @@ function inquire!(game::PlayGame, inquirer, players)
 end
 
 function decide(human::Human, ids)
-    while true 
+    while true
         println("Select a player id and card then hit enter.")
         show_hand(human)
         input = readline()
         clear_repl()
         if is_valid(input, ids)
-            id,value = parse_input(input, ids)
+            id, value = parse_input(input, ids)
             if id ≠ human.id
-            else 
+            else
                 println("Cannot ask yourself for a card. Select $(setdiff(ids, [human.id]))")
                 wait_for_key()
                 clear_repl()
                 continue
             end
             if has_card(human, value)
-                return id,value
+                return id, value
             else
-                 println("You do not have a card with a $value. Please select a different card.")
-                 wait_for_key()
-                 clear_repl()
+                println("You do not have a card with a $value. Please select a different card.")
+                wait_for_key()
+                clear_repl()
             end
         else
             println("Input error. You must enter a player number and card value. Example: 1 2")
@@ -89,26 +92,26 @@ function is_valid(input, ids)
     !contains(input, " ") ? (return false) : nothing
     str = split(input, " ")
     length(str) ≠ 2 ? (return false) : nothing
-    f(x, ids::Vector{T}) where {T<:Number} = isa(tryparse(T, x), Number)
-    f(x, ids) = true 
-    g(x) = x ∈ ("2","3","3","4","5","6","7","8","9","t","j","k","q","a")
-    !f(str[1], ids) || !g(str[2]) ? (return false) : nothing 
-    return true 
+    f(x, ids::Vector{T}) where {T <: Number} = isa(tryparse(T, x), Number)
+    f(x, ids) = true
+    g(x) = x ∈ ("2", "3", "3", "4", "5", "6", "7", "8", "9", "t", "j", "k", "q", "a")
+    !f(str[1], ids) || !g(str[2]) ? (return false) : nothing
+    return true
 end
 
 function parse_input(input, ids)
     str = split(input, " ")
-    f(x, ids::Vector{T}) where {T<:Number} = parse(T, x)
-    f(x, ids::Vector{T}) where {T} = T(x) 
+    f(x, ids::Vector{T}) where {T <: Number} = parse(T, x)
+    f(x, ids::Vector{T}) where {T} = T(x)
     id = f(str[1], ids)
-    dict = Dict("$i" => i for i in 1:9)
+    dict = Dict("$i" => i for i = 1:9)
     dict["a"] = 1
     dict["t"] = 10
     dict["j"] = 11
     dict["q"] = 12
     dict["k"] = 13
     value = dict[str[2]]
-    return id,value
+    return id, value
 end
 
 function show_hand(player)
@@ -163,7 +166,7 @@ function clear_repl()
 end
 
 function get_human(players)
-    for (k,p) ∈ players 
+    for (k, p) ∈ players
         isa(p, Human) ? (return p) : nothing
     end
 end

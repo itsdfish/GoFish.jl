@@ -11,7 +11,7 @@ is 1-3; otherwise, each player recieves 5 cards.
 function deal!(game, players)
     shuffle!(game.deck)
     n = length(players) > 3 ? 5 : 7
-    for (k,p) in players 
+    for (k, p) in players
         cards = splice!(game.deck, 1:n)
         p.cards = cards
     end
@@ -109,10 +109,10 @@ This procedure will handle the exchange of cards, update the books, and go fish.
 - `players`: a dictionary of players.
 """
 function inquire!(game, inquirer, players)
-    inquiring = true 
-    while inquiring 
+    inquiring = true
+    while inquiring
         ids = get_ids(players)
-        id,value = decide(inquirer, ids)
+        id, value = decide(inquirer, ids)
         has_card(inquirer, value) ? nothing : break
         opponent = players[id]
         if has_card(opponent, value)
@@ -131,8 +131,8 @@ function inquire!(game, inquirer, players)
             if isempty(opponent.cards)
                 delete!(players, opponent.id)
             end
-        else 
-            observe_exchange!(players, inquirer, id, value) 
+        else
+            observe_exchange!(players, inquirer, id, value)
             if !isempty(game.deck)
                 card = go_fish(game)
                 add!(inquirer, card)
@@ -157,7 +157,7 @@ function attempt_replinish!(game, players, player)
         observe_go_fish!(players, player, n_cards)
         book_map = update_books!(game, player)
         observe_books!(players, book_map)
-       return true
+        return true
     end
     return false
 end
@@ -174,8 +174,8 @@ Loop through all players and process the exchange of cards
 - `value`: value of the card in the query 
 - `cards=Card[]`: a vector of cards exchanged between the inquirer and the opponent player
 """
-function observe_exchange!(players, inquirer, opponent_id, value, cards=Card[])
-    for (k, p) ∈ players 
+function observe_exchange!(players, inquirer, opponent_id, value, cards = Card[])
+    for (k, p) ∈ players
         process_exchange!(p, inquirer.id, opponent_id, value, cards)
     end
 end
@@ -197,8 +197,8 @@ function process_exchange!(player::AbstractPlayer, inquirer_id, opponent_id, val
     # intentionally blank
 end
 
-function observe_go_fish!(players, inquirer, n_cards=1)
-    for (k, p) ∈ players 
+function observe_go_fish!(players, inquirer, n_cards = 1)
+    for (k, p) ∈ players
         process_go_fish!(p, inquirer.id, n_cards)
     end
 end
@@ -218,7 +218,7 @@ function process_go_fish!(player::AbstractPlayer, inquirer_id, n_cards)
 end
 
 function observe_books!(players, book_map)
-    for (k, p) ∈ players 
+    for (k, p) ∈ players
         process_books!(p, book_map)
     end
 end
@@ -239,7 +239,7 @@ end
 function play_round(game, players, ids)
     for id ∈ ids
         id ∈ keys(players) ? nothing : continue
-        inquire!(game, players[id], players) 
+        inquire!(game, players[id], players)
         is_over(game, players) ? break : nothing
     end
 end
@@ -260,7 +260,7 @@ end
 function update_books!(game::AbstractGame{T}, player) where {T}
     u_cards = unique(player.cards)
     n_cards = length(u_cards)
-    book_map = Dict{T,Vector{Card}}()
+    book_map = Dict{T, Vector{Card}}()
     for i ∈ 1:n_cards
         card = u_cards[i]
         idx = findall(c -> c.rnk == card.rnk, player.cards)
@@ -290,7 +290,7 @@ the id of the player who is queried and the rank of the card.
 function decide(player, ids)
     id = rand(setdiff(ids, [player.id]))
     card = rand(player.cards)
-    return id,card.rnk
+    return id, card.rnk
 end
 
 get_ids(players) = keys(players) |> collect

@@ -8,9 +8,9 @@ abstract type AbstractGame{T} end
 - `book`: a dictionary containing player id and card value:  `id => value`
 - `hand_size`: maximum number of cards in each player's hand
 """
-mutable struct Game{T} <: AbstractGame{T} 
+mutable struct Game{T} <: AbstractGame{T}
     deck::Vector{Card}
-    books::Dict{T,Vector{Card}}
+    books::Dict{T, Vector{Card}}
     hand_size::Int
 end
 
@@ -38,10 +38,10 @@ A constructor function to play Go Fish
 """
 mutable struct PlayGame{T} <: AbstractGame{T}
     deck::Vector{Card}
-    books::Dict{T,Vector{Card}}
+    books::Dict{T, Vector{Card}}
     delay::Float64
-    num_2_str::Dict{Int,String}
-    str_2_num::Dict{String,Int}
+    num_2_str::Dict{Int, String}
+    str_2_num::Dict{String, Int}
 end
 
 """
@@ -53,8 +53,8 @@ A constructor function for simulation game
 - `n_players`: the number of player
 - `delay`: delay between actions
 """
-function PlayGame(; ids, delay=1.0)
-    s = ("A","2","3","4","5","6","7","8","9","T","J","Q","K")
+function PlayGame(; ids, delay = 1.0)
+    s = ("A", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K")
     v = 1:13
     num_2_str = Dict(v => s for (v, s) ∈ zip(v, s))
     str_2_num = Dict(s => v for (s, v) ∈ zip(s, v))
@@ -84,7 +84,7 @@ Creates a `Player` object
 # Keyword
 - `id`: integer representing unique id
 """
-function Player(;id)
+function Player(; id)
     return Player(id, Card[])
 end
 
@@ -108,6 +108,6 @@ Creates a `Human` object
 # Keyword
 - `id`: integer representing unique id
 """
-function Human(;id)
+function Human(; id)
     return Human(id, Card[])
 end
