@@ -342,6 +342,7 @@ end
 
 @safetestset "observations" begin
     using GoFish
+    using Random
     using Test
     include("observations.jl")
 
@@ -362,7 +363,7 @@ end
     game.deck = [Card(:diamonds, 2), Card(:clubs, 3)]
 
     players = Dict(1 => player1, 2 => player2)
-    simulate!(game, players)
+    run!(game, players)
     @test isempty(game.deck)
     @test sum(length.(values(game.books))) == 2
     @test length(player1.cards) == 0
@@ -421,14 +422,12 @@ end
     using GoFish
     using Test
     using Random
-    using GoFish: deal!
     Random.seed!(8574)
 
-    for i = 1:100
+    for _ ∈ 1:100
         players = Dict{Int, Player}(id => Player(; id) for id = 1:3)
         ids = keys(players)
         game = Game(ids)
-        deal!(game, players)
         simulate!(game, players)
         @test isempty(game.deck)
         @test mapreduce(x -> length(x), +, values(game.books)) == 13
@@ -529,14 +528,14 @@ end
     end
 end
 
-@safetestset "get winners" begin 
+@safetestset "get winners" begin
     using GoFish
     using Test
 
-    game = Game([:a,:b,:c])
-    game.books[:a] = [Card(),Card(),Card()]
-    game.books[:b] = [Card(),Card()]
-    game.books[:c] = [Card(),Card(),Card()]
+    game = Game([:a, :b, :c])
+    game.books[:a] = [Card(), Card(), Card()]
+    game.books[:b] = [Card(), Card()]
+    game.books[:c] = [Card(), Card(), Card()]
     winners = get_winners(game)
 
     @test :a ∈ winners && :c ∈ winners

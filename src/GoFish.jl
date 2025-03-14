@@ -6,7 +6,7 @@ export AbstractPlayer
 export Card
 export Game
 export Human
-export PlayGame
+export InteractiveGame
 export Player
 
 export deal!
@@ -16,6 +16,7 @@ export rank
 export simulate!
 
 include("structs.jl")
+include("api.jl")
 include("game.jl")
 include("gui.jl")
 end

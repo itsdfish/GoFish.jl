@@ -7,7 +7,6 @@ using GoFish
 ids = (:Penelope,:Manuel,:Beelzebub)
 players = Dict(id => Player(; id) for id in ids)
 game = Game(ids)
-deal!(game, players)
 simulate!(game, players)
 ```
 
@@ -21,8 +20,9 @@ Access the books to show the results:
 game.books
 ```
 
-The outcome of the simulation can be found with `game.books`. 
-# Creating a Custom Player
+# Creating a Custom Simulation
+
+## Creating a Custom Player
 
 GoFish.jl allows you to create a player with custom behavior. The process involves creating a new subtype of `AbstractPlayer` and defining a decision method and four optional methods for setup and tracking the exchange of cards. 
 
@@ -34,13 +34,21 @@ mutable struct MyPlayer{T} <: AbstractPlayer
 end
 ```
 
-The decision logic of the player is written in the method `decide`. This method receives the player object, and a set of player ids. `decide` must return a player id and a card value.  
+## Defining Methods
+
+The API includes one required method, and four optional methods. Simply omit an optional method if you do not intend to use it. 
+
+### Required Method
+
+The decision logic of the player is written in the required method `decide`. This method receives the player object, and a set of player ids. `decide` must return a player id and a card value.  
 ```julia 
 function decide(player::MyPlayer, ids)
     # awesomeness goes here
     return player_id,card_value
 end
 ```
+
+### Optional Methods
 
 After the cards are delt, initial setup of the player can be optionally performed in the function `setup!`, which is called once prior to the game begining. The arguments for `setup` are the player and player ids. 
 ```julia

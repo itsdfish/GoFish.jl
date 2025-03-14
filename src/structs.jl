@@ -1,9 +1,12 @@
 abstract type AbstractGame{T} end
 
 """
-    Game 
+    Game{T} <: AbstractGame{T} 
+
+A Go Fish game object where `T` is the player id type.
 
 # Fields 
+
 - `deck`: deck of cards 
 - `book`: a dictionary containing player id and card value:  `id => value`
 - `hand_size`: maximum number of cards in each player's hand
@@ -20,7 +23,8 @@ end
 A constructor function for simulation game 
 
 # Argument 
-- `ids`: a vector of player ids for book dictionary
+
+- `ids`: a vector or key set of player ids for book dictionary
 """
 function Game(ids)
     books = Dict(id => Card[] for id ∈ ids)
@@ -29,14 +33,15 @@ function Game(ids)
 end
 
 """
-    PlayGame(ids)
+    InteractiveGame{T} <: AbstractGame{T}
 
-A constructor function to play Go Fish
+A constructor function to play Go Fish interactively where `T` is the player id type.
 
 # Argument 
+
 - `ids`: a vector of player ids for book dictionary
 """
-mutable struct PlayGame{T} <: AbstractGame{T}
+mutable struct InteractiveGame{T} <: AbstractGame{T}
     deck::Vector{Card}
     books::Dict{T, Vector{Card}}
     delay::Float64
@@ -45,11 +50,12 @@ mutable struct PlayGame{T} <: AbstractGame{T}
 end
 
 """
-    PlayGame(ids)
+    PlayGame(; ids, delay = 1.0)
 
 A constructor function for simulation game 
 
 # Keywords 
+
 - `n_players`: the number of player
 - `delay`: delay between actions
 """
@@ -65,9 +71,12 @@ end
 abstract type AbstractPlayer end
 
 """
-    Player <: AbstractPlayer 
+    Player{T} <: AbstractPlayer
 
-# Fields 
+A Go Fish player object where `T` is the player id type.
+
+# Fields
+
 - `id::Int`: suit of card 
 - `cards::Vector{Card}`: player's cards
 """
@@ -77,11 +86,12 @@ mutable struct Player{T} <: AbstractPlayer
 end
 
 """
-    Player(;id)
+    Player(; id)
 
 Creates a `Player` object
 
 # Keyword
+
 - `id`: integer representing unique id
 """
 function Player(; id)
@@ -89,9 +99,11 @@ function Player(; id)
 end
 
 """
-    Human <: AbstractPlayer 
+    Human{T} <: AbstractPlayer 
 
+A human player game object where `T` is the player id type.
 # Fields 
+
 - `id::Int`: suit of card 
 - `cards::Vector{Card}`: player's cards
 """
@@ -106,6 +118,7 @@ end
 Creates a `Human` object
 
 # Keyword
+
 - `id`: integer representing unique id
 """
 function Human(; id)

@@ -2,6 +2,8 @@ import GoFish: process_books!
 import GoFish: process_exchange!
 import GoFish: process_go_fish!
 import GoFish: setup!
+import GoFish: is_over
+import GoFish: play_round
 
 mutable struct TestPlayer{T} <: AbstractPlayer
     id::T
@@ -39,4 +41,13 @@ function process_exchange!(player::TestPlayer, inquirer_id, opponent_id, value, 
     player.process_exchange![:opponent_id] = opponent_id
     player.process_exchange![:value] = value
     player.process_exchange![:cards] = cards
+end
+
+function run!(game, players)
+    ids = shuffle!(collect(keys(players)))
+    _players = Dict(players)
+    map(p -> setup!(p, ids), values(players))
+    while !is_over(game, _players)
+        play_round(game, _players, ids)
+    end
 end

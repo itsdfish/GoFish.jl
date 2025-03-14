@@ -1,4 +1,4 @@
-function inquire!(game::PlayGame, inquirer, players)
+function inquire!(game::InteractiveGame, inquirer, players)
     inquiring = true
     human = get_human(players)
     while inquiring
@@ -171,7 +171,7 @@ function get_human(players)
     end
 end
 
-function play(game::PlayGame, players)
+function play(game::InteractiveGame, players)
     ids = shuffle!(collect(keys(players)))
     deal!(game, players)
     _players = Dict(players)

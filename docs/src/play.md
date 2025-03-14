@@ -7,8 +7,8 @@ using GoFish
 ids = (:you, :Bernice,:Joy)
 types = (Human,Player,Player)
 players = Dict(id => t(;id) for (t,id) in zip(types,ids))
-game = PlayGame(;ids = ids)
+game = InteractiveGame(;ids = ids)
 play(game, players)
 ```
 
-![alt text](./../resources/GoFish.gif)
+![image](assets/GoFish.gif)
